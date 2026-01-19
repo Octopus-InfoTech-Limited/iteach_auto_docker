@@ -3,7 +3,7 @@ version: "3.9"
 services:
   iteach_api:
     image: maven:3.9-eclipse-temurin-11
-    container_name: iteach_api
+    container_name: ${DOCKER_COMPOSE_CONTAINER_PREFIX}_api
     working_dir: /workspace/iteach_api
     environment:
       ITEACH_API_REPO: ${ITEACH_API_REPO}
@@ -26,7 +26,7 @@ services:
 
   iteach_web:
     image: maven:3.9-eclipse-temurin-11
-    container_name: iteach_web
+    container_name: ${DOCKER_COMPOSE_CONTAINER_PREFIX}_web
     working_dir: /workspace/iteach_web
     environment:
       ITEACH_WEB_REPO: ${ITEACH_WEB_REPO}
@@ -48,7 +48,7 @@ services:
 
   nginx:
     image: nginx:1.25-alpine
-    container_name: iteach_nginx
+    container_name: ${DOCKER_COMPOSE_CONTAINER_PREFIX}_nginx
     ports:
       - "${NGINX_HOST_PORT:-27080}:27080"
     volumes:
