@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  iteach_api:
+    image: maven:3.9-eclipse-temurin-11
+    container_name: iteach_api
+    working_dir: /workspace/iteach_api
+    environment:
+      ITEACH_API_REPO: ${ITEACH_API_REPO}
+      ITEACH_API_REF: ${ITEACH_API_REF:-}
+      JAVA_OPTS: ${JAVA_OPTS:---add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.time=ALL-UNNAMED}
+      MAVEN_OPTS: ${MAVEN_OPTS:---add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.time=ALL-UNNAMED}
+      JDBC_DRIVERCLASSNAME: ${JDBC_DRIVERCLASSNAME}
+      JDBC_URL: ${JDBC_URL}
+      JDBC_USERNAME: ${JDBC_USERNAME}
+      JDBC_PASSWORD: ${JDBC_PASSWORD}
+    command: ["/bin/sh", "-c", "sh /workspace/scripts/init_and_run.sh api"]
+    ports:
+      - "26081:26081"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./iteach_build/iteach_api:/workspace/iteach_api
+      - ./scripts:/workspace/scripts:ro
+      - ./iteach_build/iteach_uploads:/workspace/iteach_uploads
+      - m2-cache:/root/.m2
+    restart: unless-stopped
+
+  iteach_web:
+    image: maven:3.9-eclipse-temurin-11
+    container_name: iteach_web
+    working_dir: /workspace/iteach_web
+    environment:
+      ITEACH_WEB_REPO: ${ITEACH_WEB_REPO}
+      ITEACH_WEB_REF: ${ITEACH_WEB_REF:-}
+      JAVA_OPTS: ${JAVA_OPTS:---add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.time=ALL-UNNAMED}
+      MAVEN_OPTS: ${MAVEN_OPTS:---add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.time=ALL-UNNAMED}
+      API_URL: http://iteach-nginx:27080/api
+      API_LOGIN_URL: http://iteach-nginx:27080/api/v1/login
+      WS_PREFIX: iteach-nginx:27080/api
+    command: ["/bin/sh", "-c", "sh /workspace/scripts/init_and_run.sh web"]
+    ports:
+      - "26080:26080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./iteach_build/iteach_web:/workspace/iteach_web
+      - ./scripts:/workspace/scripts:ro
+      - ./iteach_build/iteach_uploads:/workspace/iteach_uploads
+      - m2-cache:/root/.m2
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: iteach_nginx
+    ports:
+      - "27080:27080"
+    volumes:
+      - ./nginx_server.conf:/etc/nginx/conf.d/iteach.conf:ro
+    depends_on:
+      - iteach_api
+      - iteach_web
+    restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - iteach-nginx
+
+volumes:
+  m2-cache:
