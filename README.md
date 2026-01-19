@@ -20,3 +20,4 @@ This repo wraps the iteach Spring Boot services in Docker Compose for local runs
 ## Notes
 - `.env.default` pins the default branches for `iteach_api` and `iteach_web`.
 - Adjust `NGINX_HOST_PORT` in `.env` if 27080 is already in use.
+- Contact **Vanson** if you wish to make any iteach_api/web branch support Spring Boot.
