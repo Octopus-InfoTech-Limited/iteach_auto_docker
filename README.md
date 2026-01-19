@@ -6,7 +6,7 @@ This repo wraps the iteach Spring Boot services in Docker Compose for local runs
 - Both `iteach_api` and `iteach_web` must support `mvn spring-boot:run`.
 - Prepare branches of `iteach_api` and `iteach_web` that run on Spring Boot.
 - Otherwise, you may use the default working branch: `feat/Qurio-spring-boot-sp1`.
-- Docker and Docker Compose installed.
+- You should have Docker and Docker Compose installed in your OS.
 
 ## Usage
 1. Clone and enter the repo:
