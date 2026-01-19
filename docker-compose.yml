@@ -15,8 +15,6 @@ services:
       JDBC_USERNAME: ${JDBC_USERNAME}
       JDBC_PASSWORD: ${JDBC_PASSWORD}
     command: ["/bin/sh", "-c", "sh /workspace/scripts/init_and_run.sh api"]
-    ports:
-      - "26081:26081"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -39,8 +37,6 @@ services:
       API_LOGIN_URL: http://iteach-nginx:27080/api/v1/login
       WS_PREFIX: iteach-nginx:27080/api
     command: ["/bin/sh", "-c", "sh /workspace/scripts/init_and_run.sh web"]
-    ports:
-      - "26080:26080"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -54,7 +50,7 @@ services:
     image: nginx:1.25-alpine
     container_name: iteach_nginx
     ports:
-      - "27080:27080"
+      - "${NGINX_HOST_PORT:-27080}:27080"
     volumes:
       - ./nginx_server.conf:/etc/nginx/conf.d/iteach.conf:ro
     depends_on:
